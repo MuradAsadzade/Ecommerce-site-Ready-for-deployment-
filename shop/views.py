@@ -6,6 +6,14 @@ from customer.models import Review
 # Create your views here.
 
 
+def product_list(request):
+    products = Products.objects.all()
+    return render(request, 'product-list.html', {
+        'products': products
+    })
+
+
+
 def home(request):
     slide_campaigns = Campaign.objects.filter(is_slide=True)[:3]
     nonslide_campaigns = Campaign.objects.filter(is_slide=False)[:4]
@@ -21,9 +29,6 @@ def home(request):
         'recent_products': recent_products,
     })
 
-
-def product_list(request):
-    return render(request, 'product-list.html', {})
 
 def product_detail(request, pk):
     product = get_object_or_404(Products, pk=pk)

@@ -4,6 +4,7 @@ from shop.models import Products
 from .models import WishItem
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 
 # Create your views here.
 
@@ -21,7 +22,9 @@ def contact(request):
 @login_required
 def wishlist_view(request):
     wishlist = request.user.customer.wishlist.all()
-    return render(request, 'wishlist.html', {'wishlist': wishlist,})
+    total_price = wishlist.aggregate(total_price = Sum('product__price'))['total_price']
+    # Author.objects.annotate(total_pages=Sum("book__pages"))
+    return render(request, 'wishlist.html', {'wishlist': wishlist, 'total_price': total_price,})
 
 @login_required
 def wish_products(request, pk):
@@ -66,3 +69,5 @@ def register(request):
 def logout_view(request):
     logout(request)
     return redirect('customer:login')
+
+
