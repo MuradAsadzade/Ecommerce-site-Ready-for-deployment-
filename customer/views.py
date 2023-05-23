@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ContactForm, RegisterForm
 from shop.models import Products
-from .models import WishItem
+from .models import WishItem, BasketItem
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, F
 
 # Create your views here.
 
@@ -40,8 +40,53 @@ def unwish_products(request, pk):
     WishItem.objects.filter(product=product, customer=customer).delete()
     return redirect(request.META.get('HTTP_REFERER'))
 
+@login_required
 def basket(request):
-    return render(request, 'basket.html', {})
+    basketlist = request.user.customer.basketlist.all().annotate(total_price=F('count') * F('product__price'))
+    all_price = basketlist.aggregate(all_price=Sum('total_price'))['all_price']
+    shipping_price = all_price * 0.07
+    final_price = all_price + shipping_price
+    return render(request, 'basket.html', {
+        'basketlist' : basketlist,
+        'all_price' : all_price,
+        'shipping_price' : shipping_price,
+        'final_price' : final_price,
+    })
+
+@login_required
+def add_basket(request, product_pk):
+    if request.method == 'POST':
+        size_pk = request.POST.get('size')
+        color_pk = request.POST.get('color')
+        count = request.POST.get('count')
+        customer = request.user.customer
+        basket = BasketItem.objects.create(product_id=product_pk, size_id=size_pk, color_id=color_pk, count=count, customer=customer)
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('shop:home')
+    
+@login_required
+def increase_basket_item(request, basket_pk):
+    basket = get_object_or_404(BasketItem, pk=basket_pk)
+    basket.count = F('count') + 1
+    basket.save()
+    return redirect('customer:basket')
+
+@login_required
+def decrease_basket_item(request, basket_pk):
+    basket = get_object_or_404(BasketItem, pk=basket_pk)
+    if basket.count == 1:
+        basket.delete()
+    else:
+        basket.count = F('count') - 1
+        basket.save()
+    return redirect('customer:basket')
+
+@login_required
+def remove_basket(request, basket_pk):
+    basket = get_object_or_404(BasketItem, pk=basket_pk)
+    basket.delete()
+    return redirect('customer:basket')
 
 def login_view(request):
     if request.method == 'POST':

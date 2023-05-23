@@ -10,8 +10,13 @@ class WishItem(models.Model):
     customer = models.ForeignKey('Customer', on_delete=models.CASCADE, related_name='wishlist')
     created = models.DateTimeField(auto_now_add=True)
 
-# class BasketItem(models.Model):
-#     pass
+class BasketItem(models.Model):
+    product = models.ForeignKey('shop.Products', on_delete=models.CASCADE)
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE, related_name='basketlist')
+    count = models.IntegerField(default=0)
+    size = models.ForeignKey('shop.Size', on_delete=models.CASCADE)
+    color = models.ForeignKey('shop.Color', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')

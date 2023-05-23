@@ -60,13 +60,14 @@
                             <h4><del>${{product.old_price}}</del></h4>
                         {% endif %}
                     </div>
-                    <form>
+                    <form method="POST" action="{% url 'customer:add-basket' product_pk=product.pk %}">
+                        {% csrf_token %}
                         <div class="d-flex mb-3">
                             <strong class="text-dark mr-3">Sizes:</strong>
                             {% for size in product.sizes.all %}
                                 <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="size-1" name="size">
-                                    <label class="custom-control-label" for="size-1">{{size.title}}</label>
+                                    <input type="radio" required class="custom-control-input" id="size-{{size.pk}}" name="size" value="{{size.pk}}">
+                                    <label class="custom-control-label" for="size-{{size.pk}}">{{size.title}}</label>
                                 </div>
                             {% endfor %}
                                 
@@ -75,31 +76,33 @@
                             <strong class="text-dark mr-3">Colors:</strong>
                             {% for color in product.colors.all %}
                                 <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" class="custom-control-input" id="color-1" name="color">
-                                    <label class="custom-control-label" for="color-1">{{color.title}}</label>
+                                    <input type="radio" required class="custom-control-input" id="color-{{color.pk}}" name="color" value="{{color.pk}}">
+                                    <label class="custom-control-label" for="color-{{color.pk}}">{{color.title}}</label>
                                 </div>
                             {% endfor %}
                         </div>
-                    </form>
-                    <div class="d-flex align-items-center mb-4 pt-2">
-                        <div class="input-group quantity mr-3" style="width: 130px;">
-                            <div class="input-group-btn">
-                                <button class="btn btn-primary btn-minus">
-                                    <i class="fa fa-minus"></i>
+                        <div class="d-flex align-items-center mb-4 pt-2">
+                            <div class="input-group quantity mr-3" style="width: 130px;">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-minus">
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                    <input type="text" class="form-control bg-secondary border-0 text-center" name="count" value="1" min="1">
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-plus">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary px-3 mr-3"><i class="fa fa-shopping-cart mr-1"></i> Add To
+                                    Cart
                                 </button>
-                            </div>
-                            <input type="text" class="form-control bg-secondary border-0 text-center" value="1">
-                            <div class="input-group-btn">
-                                <button class="btn btn-primary btn-plus">
-                                    <i class="fa fa-plus"></i>
+                                <button class="btn btn-primary px-3"><i class="fa fa-heart mr-1"></i> Add To
+                                    Wishlist
                                 </button>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary px-3 mr-3"><i class="fa fa-shopping-cart mr-1"></i> Add To
-                            Cart</button>
-                        <button class="btn btn-primary px-3"><i class="fa fa-heart mr-1"></i> Add To
-                            Wishlist</button>
-                    </div>
+                            </div>  
+                            </form>
                     <div class="d-flex pt-2">
                         <strong class="text-dark mr-2">Share on:</strong>
                         <div class="d-inline-flex">
