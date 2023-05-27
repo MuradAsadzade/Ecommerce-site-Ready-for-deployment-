@@ -63,13 +63,18 @@
                 </table>
             </div>
             <div class="col-lg-4">
-                <form class="mb-30" action="">
+                <form class="mb-30" method="GET">
                     <div class="input-group">
-                        <input type="text" class="form-control border-0 p-4" placeholder="Coupon Code">
+                        <input type="text" class="form-control border-0 p-4" name="coupon" value="{{coupon_code}}" placeholder="Coupon Code">
                         <div class="input-group-append">
                             <button class="btn btn-primary">Apply Coupon</button>
                         </div>
                     </div>
+                    {% if coupon_status == 'valid' %}
+                        <p class="text-success font-weight-bold">{{coupon_message}}</p>
+                    {% elif coupon_status == 'invalid' %}
+                        <p class="text-danger font-weight-bold">{{coupon_message}}</p>
+                    {% endif %}
                 </form>
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
                 <div class="bg-light p-30 mb-5">
@@ -82,13 +87,21 @@
                             <h6 class="font-weight-medium">Shipping</h6>
                             <h6 class="font-weight-medium">${{shipping_price|floatformat:2}}</h6>
                         </div>
+                        {% if coupon_status == 'valid' %}
+                            <div class="d-flex justify-content-between">
+                                <h6 class="font-weight-medium">Discount</h6>
+                                <h6 class="font-weight-medium">- ${{coupon_discount_amount}} ({{coupon_discount}}%)</h6>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
                             <h5>${{final_price|floatformat:2}}</h5>
                         </div>
-                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
+                        {% if final_price %}
+                            <a href="{% url 'payment:checkout' %}{% if coupon_status == 'valid' %}?coupon={{coupon_code}}{% endif %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

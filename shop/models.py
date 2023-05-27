@@ -48,7 +48,7 @@ class Campaign(models.Model):
 
 
 class Products(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.TextField(max_length=100)
     old_price = models.FloatField(null=True, blank=True)
     price = models.FloatField()
     featured = models.BooleanField(default=False)

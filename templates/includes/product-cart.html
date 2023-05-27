@@ -1,7 +1,7 @@
 {% load shop_helper %}
 
 
-<div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+<div class="{% firstof custom_class 'col-lg-3 col-md-4 col-sm-6 pb-1' %}">
     <div class="product-item bg-light mb-4">
         <div class="product-img position-relative overflow-hidden">
             <img class="img-fluid w-100" style="height: 400px; object-fit: cover; object-position: top;" src="{{product.images.first.image.url}}" alt="">

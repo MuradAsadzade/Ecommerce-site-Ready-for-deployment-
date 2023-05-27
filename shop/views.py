@@ -1,15 +1,44 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from .models import Campaign, Category, Products
-from django.db.models import Count
+from django.db.models import Count, Avg
 from customer.models import Review
+from django.core.paginator import Paginator
+from django.contrib.postgres.search import TrigramSimilarity, SearchQuery, SearchRank, SearchVector
 
 # Create your views here.
 
 
 def product_list(request):
-    products = Products.objects.all()
+    products = Products.objects.all().annotate(avg_star=Avg('reviews__star_count'), review_count=Count('reviews'))
+
+    search_input = request.GET.get('search')
+    if search_input:
+        # products = products.filter(title=search_input)
+        # products = products.filter(title__iexact=search_input)
+        # products = products.filter(title__icontains=search_input)
+        # products = products.annotate(similarity=TrigramSimilarity('title', search_input)).filter(similarity__gt=0.2).order_by('-similarity')
+        vector = SearchVector("title", weight="A") + SearchVector("description", weight="B") + SearchVector("categories__title", weight="C")
+        query = SearchQuery(search_input)
+        products = products.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2).order_by('-rank')
+
+    sorting_input = request.GET.get('sorting')
+    if sorting_input:
+        if sorting_input == '-avg_star':
+            products = products.order_by('-avg_star', '-review_count')
+        else:
+            products = products.order_by(sorting_input)
+
+
+    page_by_input = int(request.GET.get('page_by', 6))
+    page_input = request.GET.get('page', 1)
+    paginator = Paginator(products, page_by_input)
+    page = paginator.page(page_input)
+    products = page.object_list
+
     return render(request, 'product-list.html', {
-        'products': products
+        'products': products,
+        'paginator': paginator,
+        'page': page,
     })
 
 

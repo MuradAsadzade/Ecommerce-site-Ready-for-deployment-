@@ -5,4 +5,5 @@ from .models import Contact, Customer
 
 
 admin.site.register(Contact)
-admin.site.register(Customer)
+# admin.site.register(Customer)
+
