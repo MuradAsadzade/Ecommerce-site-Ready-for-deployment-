@@ -18,6 +18,7 @@ class ReviewInline(admin.TabularInline):
 @admin.register(Products)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImagesInline, ReviewInline]
+    readonly_fields = ['slug']
 
 
 admin.site.register(Size)

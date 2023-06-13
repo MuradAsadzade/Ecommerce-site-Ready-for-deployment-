@@ -27,97 +27,42 @@
     <div class="container-fluid">
         <div class="row px-xl-5">
             <!-- Shop Sidebar Start -->
-            <div class="col-lg-3 col-md-4">
+            <form class="col-lg-3 col-md-4">
                 <!-- Price Start -->
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
-                <div class="bg-light p-4 mb-30">
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="price-all">All Price</a>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="price-1">$0 - $100</a>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="price-2">$100 - $200</a>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="price-3">$200 - $300</a>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="price-4">$300 - $400</a>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <a href="#" class="text-dark" for="price-5">$400 - $500</a>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
+                <div class="bg-light p-4 mb-30 row">
+                    <input name='min_price' class="form-control mb-2" type="number" placeholder="Min">
+                    <input name='max_price' class="form-control mb-2" type="number" placeholder="Max">
                 </div>
                 <!-- Price End -->
                 
                 <!-- Color Start -->
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by color</span></h5>
                 <div class="bg-light p-4 mb-30">
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="price-all">All Color</a>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="color-1">Black</a>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="color-2">White</a>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="color-3">Red</a>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="color-4">Blue</a>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <a href="#" class="text-dark" for="color-5">Green</a>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
+                        {% for color in colors %}
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input name="colors" value="{{color.id}}" type="checkbox" class="custom-control-input" id="color-{{color.id}}">
+                                <label class="custom-control-label" for="color-{{color.id}}">{{color.title}}</label>
+                                <span class="badge border font-weight-normal">{{color.product_count}}</span>
+                            </div>
+                        {% endfor %}
                 </div>
                 <!-- Color End -->
 
                 <!-- Size Start -->
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by size</span></h5>
                 <div class="bg-light p-4 mb-30">
+                    {% for size in sizes %}
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="size-all">All Size</a>
-                            <span class="badge border font-weight-normal">1000</span>
+                            <input name="sizes" value="{{size.id}}" type="checkbox" class="custom-control-input" id="size-{{size.id}}">
+                            <label class="custom-control-label" for="size-{{size.id}}">{{size.title}}</label>
+                            <span class="badge border font-weight-normal">{{size.product_count}}</span>
                         </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="size-1">XS</a>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="size-2">S</a>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="size-3">M</a>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <a href="#" class="text-dark" for="size-4">L</a>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <a href="#" class="text-dark" for="size-5">XL</a>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
+                    {% endfor %}
                 </div>
                 <!-- Size End -->
-            </div>
+                <button class="btn btn-primary w-100">Axtar</button>
+            </form>
             <!-- Shop Sidebar End -->
 
 

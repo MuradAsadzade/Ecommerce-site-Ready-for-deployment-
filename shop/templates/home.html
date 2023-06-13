@@ -1,51 +1,72 @@
 {% extends 'layout.html' %}
 {% load static %}
+{% load i18n %}
+{% load cache %}
 
 {% block title %}
-    <title>Home</title>
+    <title>{% trans "MultiShop - Find online what you exactly want and wear it." %}</title>
 {% endblock title %}
 
+{% block meta_tags %}
+    <meta name="keywords" content="clothes, shop, online shop, shop online, wear">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Discover a world of endless possibilities at our premier ecommerce shop. Explore a curated selection of products, enjoy seamless shopping experiences.">
+    <meta property="og:title" content="Ana Səhifə - Compar Academy İxtisaslaşmış Tədris Mərkəzi">
+    <meta property="og:description" content="Məqsədimiz tədrisini etdiyimiz sahələrə marağı olan insanlara motivasiya vermək, düzgün istiqamətləndirmək və gələcəklərinə müsbət təsir göstərməkdir.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://compar.edu.az/az/">
+    <meta property="og:image" content="/staticfiles/defaults/img/compar%20logo1%402x.png">
+{% endblock meta_tags %}
+
 {% block main %}
+    <header></header>
+    <nav></nav>
+    <main></main>
+    <aside></aside>
+
+
     <!-- Carousel Start -->
-    <div class="container-fluid mb-3">
-        <div class="row px-xl-5">
-            <div class="col-lg-8">
-                <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
-                    <ol class="carousel-indicators">
-                        <li data-target="#header-carousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#header-carousel" data-slide-to="1"></li>
-                        <li data-target="#header-carousel" data-slide-to="2"></li>
-                    </ol>
-                    <div class="carousel-inner">
-                        {% for campaign in slide_campaigns %}
-                            <div class="carousel-item position-relative {% if forloop.first %}active{% endif %}" style="height: 430px;">
-                                <img class="position-absolute w-100 h-100" src="{{campaign.image.url}}" style="object-fit: cover;">
-                                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                    <div class="p-3" style="max-width: 700px;">
-                                        <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">{{campaign.title}}</h1>
-                                        <p class="mx-md-5 px-5 animate__animated animate__bounceIn">{{campaign.description}}</p>
-                                        <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Shop Now</a>
+    {% cache 20 home_slider %}
+        <div class="container-fluid mb-3">
+            <div class="row px-xl-5">
+                <div class="col-lg-8">
+                    <div id="header-carousel" class="carousel slide carousel-fade mb-30 mb-lg-0" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            <li data-target="#header-carousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#header-carousel" data-slide-to="1"></li>
+                            <li data-target="#header-carousel" data-slide-to="2"></li>
+                        </ol>
+                        <div class="carousel-inner">
+                            {% for campaign in slide_campaigns %}
+                                <div class="carousel-item position-relative {% if forloop.first %}active{% endif %}" style="height: 430px;">
+                                    <img class="position-absolute w-100 h-100" src="{{campaign.image.url}}" style="object-fit: cover;">
+                                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                                        <div class="p-3" style="max-width: 700px;">
+                                            <h1 class="display-4 text-white mb-3 animate__animated animate__fadeInDown">{{campaign.title}}</h1>
+                                            <p class="mx-md-5 px-5 animate__animated animate__bounceIn">{{campaign.description}}</p>
+                                            <a class="btn btn-outline-light py-2 px-4 mt-3 animate__animated animate__fadeInUp" href="#">Shop Now</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                {% for campaign in nonslide_campaigns|slice:"0:2" %}
-                    <div class="product-offer mb-30" style="height: 200px;">
-                        <img class="img-fluid" src="{{campaign.image.url}}" alt="">
-                        <div class="offer-text">
-                            <h6 class="text-white text-uppercase">Save {{campaign.discount|floatformat}}%</h6>
-                            <h3 class="text-white mb-3">{{campaign.title}}</h3>
-                            <a href="" class="btn btn-primary">Shop Now</a>
+                            {% endfor %}
                         </div>
                     </div>
-                {% endfor %}
+                </div>
+                <div class="col-lg-4">
+                    {% for campaign in nonslide_campaigns|slice:"0:2" %}
+                        <div class="product-offer mb-30" style="height: 200px;">
+                            <img class="img-fluid" src="{{campaign.image.url}}" alt="">
+                            <div class="offer-text">
+                                <h6 class="text-white text-uppercase">Save {{campaign.discount|floatformat}}%</h6>
+                                <h3 class="text-white mb-3">{{campaign.title}}</h3>
+                                <a href="" class="btn btn-primary">Shop Now</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endcache %}
     <!-- Carousel End -->
 
 

@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
@@ -18,13 +18,13 @@ class Coupon(models.Model):
     
     def is_valid(self, customer):
         if timezone.localtime() > self.expire:
-            return [False, 'Bu kuponun tarixi kecmisdir']
+            return [False, _('The history of this coupon is in the past.')]
         elif self.used_customers.count() >= self.limit:
-            return [False, 'Bu kuponun limiti bitmisdir']
+            return [False, _('The limit of the coupon is over.')]
         elif self.used_customers.contains(customer):
-            return [False, 'Siz artiq bu kupondan istifade etmisiniz']
+            return [False, _('You have already used that coupon')]
         else:
-            return [True, 'Kupon ugurla istifade olundu']
+            return [True, _('Coupon is valid')]
 
 
 

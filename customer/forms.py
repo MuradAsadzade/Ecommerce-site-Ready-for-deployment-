@@ -1,5 +1,5 @@
 from django import forms
-from .models import Contact, Customer
+from .models import Contact, Customer, ResetPassword
 from django.contrib.auth.models import User
 
 class ContactForm(forms.ModelForm):
@@ -40,3 +40,44 @@ class RegisterForm(forms.Form):
         customer = Customer.objects.create(user=user)
         
         return customer
+    
+
+
+
+class PasswordResetForm(forms.Form):
+    token = forms.CharField(widget=forms.HiddenInput())
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password Again'}))
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        token = cleaned_data['token']
+        username = cleaned_data['username']
+        password = cleaned_data['password']
+        password_again = cleaned_data['password_again']
+        rp = ResetPassword.objects.filter(token=token).first()
+        user = User.objects.filter(username=username).first()
+        if not user:
+            raise forms.ValidationError('User not found')
+        if not rp or rp.user != user:
+            raise forms.ValidationError('Process failed')
+        
+        if password and password_again and password != password_again:
+            raise forms.ValidationError('Passwords do not match')
+        
+        return cleaned_data
+    
+
+    def save(self):
+        cleaned_data = self.cleaned_data
+        username = cleaned_data['username']
+        password = cleaned_data['password']
+        user = User.objects.get(username=username)
+        user.set_password(password)
+        user.save()
+        rp = ResetPassword.objects.get(token=cleaned_data['token'])
+        rp.used = True
+        rp.save()
+        return user

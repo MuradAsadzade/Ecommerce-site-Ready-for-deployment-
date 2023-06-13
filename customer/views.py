@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import ContactForm, RegisterForm
+from .forms import ContactForm, RegisterForm, PasswordResetForm
 from shop.models import Products
-from .models import WishItem, BasketItem
+from .models import WishItem, BasketItem, ResetPassword
 from payment.models import Coupon
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, F
+from django.conf import settings
+from django.core.mail import send_mail
 
 # Create your views here.
 
@@ -123,9 +126,12 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        remember = request.POST.get('remember', False)
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
+            if not remember:
+                request.session.set_expiry(0)
             return redirect('shop:home')
         return render(request, 'login.html', {'fail': True})
     return render(request, 'login.html', {'fail': False})
@@ -147,3 +153,49 @@ def logout_view(request):
     return redirect('customer:login')
 
 
+usd_eq = {'AZN' : 1.7, 'TRY': 21, 'EUR': 0.93, 'USD': 1}
+def change_currency(request):
+    currency = request.GET.get('currency')
+    currency_ratio = usd_eq[currency]
+    request.session['currency'] = currency
+    request.session['currency_ratio'] = currency_ratio
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def forgot_password_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = User.objects.filter(email=email).first()
+        if user:
+            ResetPassword.objects.filter(user=user).update(used=True)
+            rp = ResetPassword.objects.create(user=user)
+            url = request.build_absolute_uri(rp.get_absolute_url())
+            message = f'Please renew your password from this link: {url}'
+            subject = 'Renew your password'
+            sender = settings.EMAIL_HOST_USER
+            send_mail(subject, message, sender, [email])
+            return redirect('customer:reset-password-result', color='success', message='Mail sent successfully')
+        else:
+            return render(request, 'forgot_password.html', {'status': 'invalid_user'})
+    
+    return render(request, 'forgot_password.html')
+
+def reset_password_view(request, token):
+    rp = ResetPassword.objects.filter(token=token).first()
+    if rp and rp.is_valid():
+        if request.method == 'GET':
+            form = PasswordResetForm(initial={'token': token})
+            return render(request, 'reset-password.html', {'form': form})
+        else:
+            form = PasswordResetForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('customer:reset-password-result', color='success', message='Password changed successfully')
+            return render(request, 'reset-password.html', {'form': form})
+    else:
+        return redirect('customer:reset-password-result', color='danger', message='The reset password link is invalid or expired')
+
+    
+
+def reset_password_result_view(request, color, message):
+    return render(request, 'reset-password-result.html', {'color': color, 'message': message})

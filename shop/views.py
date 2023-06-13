@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
-from .models import Campaign, Category, Products
+from .models import Campaign, Category, Products, Color, Size
 from django.db.models import Count, Avg
 from customer.models import Review
 from django.core.paginator import Paginator
 from django.contrib.postgres.search import TrigramSimilarity, SearchQuery, SearchRank, SearchVector
+from .filters import ProductFilter
+from django.views.decorators.cache import cache_page
 
 # Create your views here.
 
@@ -19,7 +21,10 @@ def product_list(request):
         # products = products.annotate(similarity=TrigramSimilarity('title', search_input)).filter(similarity__gt=0.2).order_by('-similarity')
         vector = SearchVector("title", weight="A") + SearchVector("description", weight="B") + SearchVector("categories__title", weight="C")
         query = SearchQuery(search_input)
-        products = products.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.2).order_by('-rank')
+        products = products.annotate(rank=SearchRank(vector, query)).filter(rank__gte=0.1).order_by('-rank')
+
+    product_filter = ProductFilter(request.GET, products)
+    products = product_filter.qs
 
     sorting_input = request.GET.get('sorting')
     if sorting_input:
@@ -35,14 +40,19 @@ def product_list(request):
     page = paginator.page(page_input)
     products = page.object_list
 
+    colors = Color.objects.all().annotate(product_count=Count('products'))
+    sizes = Size.objects.all().annotate(product_count=Count('products'))
+
     return render(request, 'product-list.html', {
         'products': products,
         'paginator': paginator,
         'page': page,
+        'colors': colors,
+        'sizes': sizes,
     })
 
 
-
+# @cache_page(30)
 def home(request):
     slide_campaigns = Campaign.objects.filter(is_slide=True)[:3]
     nonslide_campaigns = Campaign.objects.filter(is_slide=False)[:4]
@@ -59,7 +69,7 @@ def home(request):
     })
 
 
-def product_detail(request, pk):
+def product_detail(request, pk, slug):
     product = get_object_or_404(Products, pk=pk)
     # other_products = Products.objects.filter(categories__in=product.categories.all()).annotate(common_product_count=Count('pk')).exclude(pk=product.pk).order_by('-common_product_count')
     other_products = Products.objects.exclude(pk=product.pk).order_by('?')[:5]

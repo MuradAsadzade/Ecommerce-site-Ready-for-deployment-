@@ -1,8 +1,9 @@
 {% extends 'layout.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}
-    <title>Contact</title>
+    <title>{% trans "Contact" %}</title>
 {% endblock title %}
 
 {% block main %}
@@ -11,8 +12,8 @@
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <span class="breadcrumb-item active">Contact</span>
+                    <a class="breadcrumb-item text-dark" href="#">{% trans "Home" %}</a>
+                    <span class="breadcrumb-item active">{% trans "Contact" %}</span>
                 </nav>
             </div>
         </div>
@@ -22,17 +23,17 @@
 
     <!-- Contact Start -->
     <div class="container-fluid">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Contact Us</span></h2>
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">{% trans "Contact Us" %}</span></h2>
         <div class="row px-xl-5">
             <div class="col-lg-7 mb-5">
                 <div class="contact-form bg-light p-30">
                     {% if result == 'success' %}
                         <div class="alert alert-success" role="alert">
-                            Müraciətiniz uğurla göndərildi!
+                            {% trans "Müraciətiniz uğurla göndərildi!" %}
                         </div>
                     {% elif result == 'fail' %}
                         <div class="alert alert-danger" role="alert">
-                            Uğursuz əməliyyat!
+                            {% trans "Uğursuz əməliyyat!" %}
                         </div>
                     {% endif %}
                     <p class="text-danger">{{form.non_field_error}}</p>
@@ -63,8 +64,7 @@
                             {% endfor %}
                         </div>
                         <div>
-                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Send
-                                Message</button>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">{% trans "Send Message" %}</button>
                         </div>
                     </form>
                 </div>
@@ -76,7 +76,7 @@
                     frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div>
                 <div class="bg-light p-30 mb-3">
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>{% trans "123 Street, New York, USA" %}</p>
                     <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
                     <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
                 </div>

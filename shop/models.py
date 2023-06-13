@@ -3,6 +3,7 @@ from django.contrib.admin import display
 from django.utils.html import format_html
 from django.urls import reverse
 from ckeditor.fields import RichTextField
+from shared.urlutils import get_slug
 
 # Create your models here.
 
@@ -49,6 +50,7 @@ class Campaign(models.Model):
 
 class Products(models.Model):
     title = models.TextField(max_length=100)
+    slug = models.CharField(max_length=100, blank=True)
     old_price = models.FloatField(null=True, blank=True)
     price = models.FloatField()
     featured = models.BooleanField(default=False)
@@ -57,14 +59,18 @@ class Products(models.Model):
     colors = models.ManyToManyField(Color, related_name='products')
     categories = models.ManyToManyField(Category, related_name='products')
     campaigns = models.ManyToManyField(Campaign, related_name='products')
-    update = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = get_slug(self.title)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("shop:product-detail", kwargs={"pk": self.pk})
+        return reverse("shop:product-detail", kwargs={"pk": self.pk, 'slug': self.slug})
     
     def get_avg_star(self):
         return self.reviews.aggregate(star_count_avg=models.Avg('star_count'))['star_count_avg'] or 0
