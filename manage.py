@@ -7,7 +7,10 @@ import dotenv
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings')
-    dotenv.load_dotenv()
+    if os.getenv('IS_DOCKER') == 'True':
+        dotenv.load_dotenv('.docker.env')
+    else:
+        dotenv.load_dotenv()
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

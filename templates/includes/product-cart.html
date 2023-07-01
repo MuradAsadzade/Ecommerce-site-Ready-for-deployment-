@@ -9,9 +9,9 @@
             <div class="product-action">
                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
             {% if not product|is_wished:request %}
-                <a class="btn btn-outline-dark btn-square" href="{% url 'customer:wish-product' product.pk %}"><i class="far fa-heart"></i></a>
+                <span class="btn btn-outline-dark btn-square wish-button wished" product-id="{{product.pk}}"><i class="far fa-heart"></i></span>
                 {% else %}
-                <a class="btn btn-outline-dark btn-square" href="{% url 'customer:unwish-product' product.pk %}"><i class="fas fa-heart"></i></a>
+                <span class="btn btn-outline-dark btn-square wish-button nonwished" product-id="{{product.pk}}"><i class="fas fa-heart"></i></span>
             {% endif %}
                 <a class="btn btn-outline-dark btn-square" href="{{product.get_absolute_url}}"><i class="fa fa-search"></i></a>
             </div>
